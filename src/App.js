@@ -5,16 +5,24 @@ const TodoApp = () => {
   const [taskInput, setTaskInput] = useState('');
   const [editIndex, setEditIndex] = useState(null);
 
+
   useEffect(() => {
-    const storedTasks = JSON.parse(localStorage.getItem('tasks'));
-    if (storedTasks) {
-      setTasks(storedTasks);
+    try {
+      const storedTasks = JSON.parse(localStorage.getItem('tasks'));
+      if (Array.isArray(storedTasks)) {
+        setTasks(storedTasks);
+      }
+    } catch (error) {
+      console.error('Failed to load tasks from localStorage:', error);
     }
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('tasks', JSON.stringify(tasks));
+    if (tasks.length > 0) {
+      localStorage.setItem('tasks', JSON.stringify(tasks));
+    }
   }, [tasks]);
+  
 
   const handleAddTask = () => {
     if (taskInput.trim() === '') return;
