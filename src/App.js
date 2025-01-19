@@ -1,42 +1,35 @@
 import React, { useState, useEffect } from 'react';
 
 const TodoApp = () => {
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useState(() => {
+    // Initial load of tasks from localStorage
+    const savedTasks = localStorage.getItem('tasks');
+    return savedTasks ? JSON.parse(savedTasks) : [];
+  });
+
   const [taskInput, setTaskInput] = useState('');
   const [editIndex, setEditIndex] = useState(null);
 
+  // Save tasks to localStorage whenever `tasks` changes
   useEffect(() => {
     try {
-      const storedTasks = JSON.parse(localStorage.getItem('tasks'));
-      if (Array.isArray(storedTasks)) {
-        // Ensure all tasks are objects with `text` and `completed` properties
-        const standardizedTasks = storedTasks.map(task =>
-          typeof task === 'string'
-            ? { text: task, completed: false }
-            : { ...task, completed: !!task.completed }
-        );
-        setTasks(standardizedTasks);
-      }
+      localStorage.setItem('tasks', JSON.stringify(tasks));
     } catch (error) {
-      console.error('Failed to load tasks from localStorage:', error);
+      console.error('Error saving tasks to localStorage:', error);
     }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem('tasks', JSON.stringify(tasks));
   }, [tasks]);
 
   const handleAddTask = () => {
     if (taskInput.trim() === '') return;
 
     if (editIndex !== null) {
-      // Editing an existing task
+      // Update an existing task
       const updatedTasks = [...tasks];
       updatedTasks[editIndex] = { ...updatedTasks[editIndex], text: taskInput };
       setTasks(updatedTasks);
       setEditIndex(null);
     } else {
-      // Adding a new task
+      // Add a new task
       setTasks([...tasks, { text: taskInput, completed: false }]);
     }
 
@@ -60,7 +53,16 @@ const TodoApp = () => {
   };
 
   return (
-    <div style={{ maxWidth: '400px', margin: 'auto', padding: '20px', backgroundColor: 'pink', textAlign: 'center', marginTop: '100px' }}>
+    <div
+      style={{
+        maxWidth: '400px',
+        margin: 'auto',
+        padding: '20px',
+        backgroundColor: 'pink',
+        textAlign: 'center',
+        marginTop: '100px',
+      }}
+    >
       <h1 style={{ backgroundColor: 'purple', color: 'white' }}>TODO List</h1>
       <div style={{ marginBottom: '20px' }}>
         <input
@@ -72,7 +74,13 @@ const TodoApp = () => {
         />
         <button
           onClick={handleAddTask}
-          style={{ padding: '8px 15px', backgroundColor: 'green', border: 'none', marginLeft: '10px', cursor: 'pointer' }}
+          style={{
+            padding: '8px 15px',
+            backgroundColor: 'green',
+            border: 'none',
+            marginLeft: '10px',
+            cursor: 'pointer',
+          }}
         >
           {editIndex !== null ? 'Update' : 'Add'}
         </button>
@@ -99,18 +107,37 @@ const TodoApp = () => {
                 onChange={() => toggleTaskCompletion(index)}
                 style={{ marginRight: '10px' }}
               />
-              <span style={{ textDecoration: task.completed ? 'line-through' : 'none' }}>{task.text}</span>
+              <span
+                style={{
+                  textDecoration: task.completed ? 'line-through' : 'none',
+                }}
+              >
+                {task.text}
+              </span>
             </div>
             <div>
               <button
                 onClick={() => handleEditTask(index)}
-                style={{ marginRight: '10px', cursor: 'pointer', border: 'none', backgroundColor: 'purple', padding: '5px 10px', color: 'white' }}
+                style={{
+                  marginRight: '10px',
+                  cursor: 'pointer',
+                  border: 'none',
+                  backgroundColor: 'purple',
+                  padding: '5px 10px',
+                  color: 'white',
+                }}
               >
                 Edit
               </button>
               <button
                 onClick={() => handleDeleteTask(index)}
-                style={{ backgroundColor: 'red', border: 'none', color: 'white', padding: '5px 10px', cursor: 'pointer' }}
+                style={{
+                  backgroundColor: 'red',
+                  border: 'none',
+                  color: 'white',
+                  padding: '5px 10px',
+                  cursor: 'pointer',
+                }}
               >
                 Delete
               </button>
@@ -123,4 +150,3 @@ const TodoApp = () => {
 };
 
 export default TodoApp;
-
