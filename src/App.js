@@ -136,8 +136,23 @@ const TodoApp = () => {
                 type="checkbox"
                 checked={task.completed}
                 onChange={() => toggleTaskCompletion(index)}
-                style={{ marginRight: "10px" }}
+                style={{
+                  marginRight: "10px",
+                  width: "20px",
+                  height: "20px",
+                  transform: "scale(1.5)",
+                  cursor: "pointer",
+                  appearance: "none", // Removes default styles
+                  border: "0.5px solid #4c00b0", // Custom border color
+                  borderRadius: "4px", // Optional: Rounded edges
+                  backgroundColor: task.completed ? "#4c00b0" : "#fff",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  position: "relative",
+                }}
               />
+
               <span
                 style={{
                   textDecoration: task.completed ? "line-through" : "none",
@@ -145,7 +160,24 @@ const TodoApp = () => {
               >
                 {task.text}
               </span>
+
+              {/* Add checkmark inside the checkbox using ::after pseudo-element */}
+              <style>
+                {`
+      input[type="checkbox"]:checked::after {
+        content: "✔"; 
+        color: white; 
+        font-size: 14px; 
+        font-weight: bold;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+      }
+    `}
+              </style>
             </div>
+
             <div>
               <button
                 onClick={() => handleEditTask(index)}
